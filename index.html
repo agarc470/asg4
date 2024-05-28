@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <title>Change a point color</title>
+</head>
+
+<body onload="main()">
+  <p>
+    <canvas id="webgl" width="400" height="400">
+      Please use a browser that supports "canvas"
+    </canvas>
+  <p>
+
+  <p id="numdot"> XXX </p>
+  <p>
+    Normal:
+    <button type="button" id="normalOn">ON</button>
+    <button type="button" id="normalOff">OFF</button>
+    Light:
+    <button type="button" id="lightOn">ON</button>
+    <button type="button" id="lightOff">OFF</button>
+  <p>
+  Light X <input type="range" min="-250" max="250" value="0" class="slider" id="lightSlideX">
+  Light Y <input type="range" min="-250" max="250" value="100" class="slider" id="lightSlideY">
+  Light Z <input type="range" min="-250" max="250" value="200" class="slider" id="lightSlideZ">
+  </p>
+  <p>
+    frontLeg1 <input type="range" min="-45" max="45" value="0" class="slider" id="frontLeg1">
+    frontKnee1 <input type="range" min="-45" max="45" value="0" class="slider" id="frontKnee1">
+    backLeg1 <input type="range" min="-45" max="45" value="0" class="slider" id="backLeg1">
+    backKnee1 <input type="range" min="-45" max="45" value="0" class="slider" id="backKnee1">
+  <p>
+    frontLeg2 <input type="range" min="-45" max="45" value="0" class="slider" id="frontLeg2">
+    frontKnee2 <input type="range" min="-45" max="45" value="0" class="slider" id="frontKnee2">
+    backLeg2 <input type="range" min="-45" max="45" value="0" class="slider" id="backLeg2">
+    backKnee2 <input type="range" min="-45" max="45" value="0" class="slider" id="backKnee2">
+  <p>
+    tail1 <input type="range" min="-45" max="45" value="0" class="slider" id="tail1">
+    tail2 <input type="range" min="-45" max="45" value="0" class="slider" id="tail2">
+    tail3 <input type="range" min="-45" max="45" value="0" class="slider" id="tail3">
+    tail4 <input type="range" min="-45" max="45" value="0" class="slider" id="tail4">
+  <p>
+    Animation:
+    <button type="button" id="animationYellowOnButton">ON</button>
+    <button type="button" id="animationYellowOffButton">OFF</button>
+  <p>
+    Camera Angle X <input type="range" min="0" max="360" value="5" class="slider" id="angleSlideX">
+  <p>
+    Camera Angle Y <input type="range" min="0" max="180" value="5" class="slider" id="angleSlideY">
+  <p>
+    <audio id="successSound" src="magic.mp3" preload="auto"></audio>
+    <script src="lib/webgl-utils.js"></script>
+    <script src="lib/webgl-debug.js"></script>
+    <script src="lib/cuon-matrix-cse160.js"></script>
+    <script src="Triangle.js"></script>
+    <script src="Cube.js"></script>
+    <script src="Cylinder.js"></script>
+    <script src="Sphere.js"></script>
+    <script src="World.js"></script>
+    <script src="Camera.js"></script>
+</body>
+
+</html>

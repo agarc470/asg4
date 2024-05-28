@@ -561,9 +561,9 @@ function main() {
   
   // Set initial spotlight parameters
   gl.uniform3fv(u_spotDirection, new Float32Array([0.0, -1.0, 0.0]));
-  gl.uniform3fv(u_spotPosition, new Float32Array([0.0, 10.0, 0.0]));
-  gl.uniform1f(u_spotCutoff, Math.cos(Math.PI / 6));
-  gl.uniform1f(u_spotDecay, 20.0);
+  gl.uniform3fv(u_spotPosition, new Float32Array([0.0, 6.0, 2.0]));
+  gl.uniform1f(u_spotCutoff, Math.cos(Math.PI / 12));
+  gl.uniform1f(u_spotDecay, 30.0);
   
   // Set up actions for the HTML UI elements
   addActionsForHtmlUI();

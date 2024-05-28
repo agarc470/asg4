@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="utf-8" />
-  <title>Change a point color</title>
+  <title>Lighting</title>
 </head>
 
 <body onload="main()">
@@ -11,6 +11,7 @@
     <canvas id="webgl" width="400" height="400">
       Please use a browser that supports "canvas"
     </canvas>
+    Note: The 'Toggle Spotlight' button activates a spotlight located above the center of the cube with a light yellow color.
   <p>
 
   <p id="numdot"> XXX </p>
@@ -21,6 +22,8 @@
     Light:
     <button type="button" id="lightOn">ON</button>
     <button type="button" id="lightOff">OFF</button>
+    Spotlight: <button type ="button" id="toggleSpotlight">Toggle Spotlight</button>
+
   <p>
   Light X <input type="range" min="-250" max="250" value="0" class="slider" id="lightSlideX">
   Light Y <input type="range" min="-250" max="250" value="100" class="slider" id="lightSlideY">

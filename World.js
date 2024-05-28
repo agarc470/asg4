@@ -32,6 +32,11 @@ var FSHADER_SOURCE = `
   uniform vec3 u_cameraPos;
   varying vec4 v_VertPos;
   uniform bool u_lightOn;
+  uniform bool u_spotLightOn; 
+  uniform vec3 u_spotDirection;
+  uniform vec3 u_spotPosition;
+  uniform float u_spotCutoff;  // Cosine of the cutoff angle
+  uniform float u_spotDecay;   // Decay factor
   void main() {
       if (u_whichTexture == -3){
       gl_FragColor = vec4((v_Normal+1.0)/2.0,1.0);
@@ -70,10 +75,29 @@ var FSHADER_SOURCE = `
     vec3 E = normalize(u_cameraPos-vec3(v_VertPos));
     
     //specular
-    float specular = pow(max(dot(E,R), 0.0), 10.0);
+    float specular = pow(max(dot(E,R), 0.0), 50.0);
     
     vec3 diffuse = vec3(gl_FragColor) * nDotL *.7;
     vec3 ambient = vec3(gl_FragColor) * 0.3;
+    
+    // Define a unique color for the spotlight effect
+    vec4 spotlightColor = vec4(1.0, 1.0, 0.8, 1.0); // Soft yellow light
+
+    if (u_spotLightOn) {
+      // Spotlight calculations as previously defined
+      vec3 spotlightDir = normalize(u_spotPosition - vec3(v_VertPos));
+      float spotEffect = dot(spotlightDir, normalize(-u_spotDirection));
+      if(spotEffect > u_spotCutoff) {
+          float spotIntensity = pow(spotEffect, u_spotDecay);
+          diffuse *= spotIntensity * spotlightColor.rgb;
+          specular *= spotIntensity;
+      } else {
+          diffuse *= 0.0;
+          specular *= 0.0;
+      }
+  }
+  
+
     if (u_lightOn){
       if(u_whichTexture==0){
         gl_FragColor = vec4(specular+diffuse+ambient, 1.0);
@@ -103,6 +127,8 @@ let u_whichTexture;
 let u_lightPos;
 let u_cameraPos;
 let u_lightOn;
+let u_spotLightOn;
+let u_spotDirection, u_spotPosition, u_spotCutoff, u_spotDecay;
 let currentSkyTextureIndex;
 let currentFloorTextureIndex = 2;
 let worldBlocks = Array.from({ length: 32 }, () => Array.from({ length: 32 }, () => []));
@@ -230,6 +256,22 @@ function connectVariablesToGLSL() {
     console.log('Failed to get the storage location of u_lightOn');
     return false;
   }
+  u_spotLightOn = gl.getUniformLocation(gl.program, 'u_spotLightOn');
+  if (!u_spotLightOn) {
+    console.log('Failed to get the storage location of u_spotLightOn');
+    return false;
+  }
+
+  u_spotDirection = gl.getUniformLocation(gl.program, 'u_spotDirection');
+  u_spotPosition = gl.getUniformLocation(gl.program, 'u_spotPosition');
+  u_spotCutoff = gl.getUniformLocation(gl.program, 'u_spotCutoff');
+  u_spotDecay = gl.getUniformLocation(gl.program, 'u_spotDecay');
+
+  if (!u_spotDirection || !u_spotPosition || !u_spotCutoff || !u_spotDecay) {
+    console.log('Failed to get the storage locations of spotlight parameters');
+    return false;
+  }
+
   var identityM = new Matrix4();
   gl.uniformMatrix4fv(u_ModelMatrix, false, identityM.elements);
 
@@ -270,6 +312,7 @@ let g_backKnee2 = 0;
 let g_normalOn = false;
 let g_lightPos = [0,1,2];
 let g_lightOn = true;
+let spotlightOn = true; 
 let pokeAnimationActive = false;
 let pokeAnimationStartTime = 0;
 let g_globalRotateMatrix = new Matrix4();
@@ -298,6 +341,13 @@ function addActionsForHtmlUI() {
   document.getElementById('lightOff').onclick = function () {
     g_lightOn = false;
   };
+  document.getElementById('toggleSpotlight').addEventListener('click', function() {
+    spotlightOn = !spotlightOn; // Toggle the state of the spotlight
+    console.log("Spotlight Toggled: " + (spotlightOn ? "On" : "Off"));
+    gl.uniform1i(u_spotLightOn, spotlightOn ? 1 : 0); // Update the spotlight uniform
+    renderScene(); // Re-render the scene to reflect the change
+});
+
   document.getElementById('animationYellowOffButton').onclick = function () {
     g_tail1Animation = false;
     g_tail2Animation = false;
@@ -508,6 +558,13 @@ function main() {
 
   g_camera = new Camera();
   console.log("Initial Position:", g_camera.getPosition());
+  
+  // Set initial spotlight parameters
+  gl.uniform3fv(u_spotDirection, new Float32Array([0.0, -1.0, 0.0]));
+  gl.uniform3fv(u_spotPosition, new Float32Array([0.0, 10.0, 0.0]));
+  gl.uniform1f(u_spotCutoff, Math.cos(Math.PI / 6));
+  gl.uniform1f(u_spotDecay, 20.0);
+  
   // Set up actions for the HTML UI elements
   addActionsForHtmlUI();
   spawnInitialBlocks();
@@ -799,7 +856,7 @@ function renderScene() {
 
   // draw sphere
   sphere.matrix.translate(1.5,-1.5,1.5);
-  sphere.textureNum = -2;
+  sphere.textureNum = 0;
   if (g_normalOn) sphere.textureNum = -3;
   sphere.render();
   //draw body cube
